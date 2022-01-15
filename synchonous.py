@@ -3,7 +3,7 @@ import websockets
 import asyncio
 import base64
 import json
-from config import auth_key
+from config import auth_key_assembly
  
 FRAMES_PER_BUFFER = 3200
 FORMAT = pyaudio.paInt16
@@ -27,7 +27,7 @@ async def send_receive():
    print(f'Connecting websocket to url ${URL}')
    async with websockets.connect(
        URL,
-       extra_headers=(("Authorization", auth_key),),
+       extra_headers=(("Authorization", auth_key_assembly),),
        ping_interval=5,
        ping_timeout=20
    ) as _ws:
