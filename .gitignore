@@ -2,3 +2,6 @@
 *.mp3
 *.txt
 config.py
+.vscode/settings.json
+.idea/
+_pychache_/
