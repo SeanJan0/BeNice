@@ -4,7 +4,7 @@ import asyncio
 import base64
 import json
 from config import auth_key_assembly
- 
+
 FRAMES_PER_BUFFER = 3200
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
@@ -24,6 +24,7 @@ stream = p.open(
 URL = "wss://api.assemblyai.com/v2/realtime/ws?sample_rate=16000"
 
 async def send_receive():
+   curr_prompt = ""
    print(f'Connecting websocket to url ${URL}')
    async with websockets.connect(
        URL,
@@ -57,7 +58,10 @@ async def send_receive():
            while True:
                try:
                    result_str = await _ws.recv()
-                   print(json.loads(result_str)['text'])
+                   line = json.loads(result_str)['text']
+                   if line:
+                       curr_prompt = line
+                   print(curr_prompt)
                except websockets.exceptions.ConnectionClosedError as e:
                    print(e)
                    assert e.code == 4008
