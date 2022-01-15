@@ -1,9 +1,8 @@
 import requests
 import os
 import sys
-import time
+from config import auth_key
 
-auth_key = '9297b48aa27d405b957da4bcad29a757'
 os.chdir(os.path.dirname(sys.argv[0]))
 
 headers = {
