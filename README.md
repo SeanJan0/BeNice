@@ -14,4 +14,4 @@ To run, you are going to get a api key from assemblyAI and GPT-3. Create a file 
 after you do that, open the terminal in the directory and run the command
 
 
-                streamlit run reccomender.py
+                streamlit run assemblygpt.py
