@@ -40,16 +40,15 @@ st.title("Recommender")
 
 start_record, stop_record = st.columns(2)
 
+statement = st.empty()
+
 start_record.button("Listen", help="Turn on listening", on_click=toggle_on)
 stop_record.button("Stop Listening", help="Stop listening", on_click=toggle_off)
-
-voiceText = ""
-st.text(voiceText)
 
 # the AssemblyAI endpoint we're going to hit
 URL = "wss://api.assemblyai.com/v2/realtime/ws?sample_rate=16000"
 
-async def send_receive():
+async def send_receive(statement):
    print(f'Connecting websocket to url ${URL}')
    async with websockets.connect(
        URL,
@@ -87,9 +86,10 @@ async def send_receive():
                    result_str = await _ws.recv()
                    if json.loads(result_str)['message_type'] == 'FinalTranscript':
                        print(json.loads(result_str)['text'])
-                       st.markdown(json.loads(result_str)['text'])
-                       voiceText = json.loads(result_str)['text']
+                       statement.empty()
+                       statement.text(json.loads(result_str)['text'])
                        gpt_ran = True
+                       curr_prompt = "Me: " + json.loads(result_str)['text']
                        response = openai.Completion.create(
                         engine="davinci",
                         prompt=curr_prompt,
@@ -99,7 +99,7 @@ async def send_receive():
                         n=3,
                         frequency_penalty=0.0,
                         presence_penalty=0.0,
-                        stop=["Her: "]
+                        stop=["Me: "]
                         )
                 
                     
@@ -114,4 +114,4 @@ async def send_receive():
       
        send_result, receive_result = await asyncio.gather(send(), receive())
 
-asyncio.run(send_receive())
+asyncio.run(send_receive(statement))
