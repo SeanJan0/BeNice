@@ -1,4 +1,3 @@
-import requests
 import openai
 from config import auth_key_open
 
