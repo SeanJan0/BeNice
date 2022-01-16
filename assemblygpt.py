@@ -42,13 +42,18 @@ start_record, stop_record = st.columns(2)
 
 statement = st.empty()
 
+option_1, option_2, option_3 = st.columns(3)
+option_1 = st.empty()
+option_2 = st.empty()
+option_3 = st.empty()
+
 start_record.button("Listen", help="Turn on listening", on_click=toggle_on)
 stop_record.button("Stop Listening", help="Stop listening", on_click=toggle_off)
 
 # the AssemblyAI endpoint we're going to hit
 URL = "wss://api.assemblyai.com/v2/realtime/ws?sample_rate=16000"
 
-async def send_receive(statement):
+async def send_receive(statement, option_1, option_2, option_3):
    print(f'Connecting websocket to url ${URL}')
    async with websockets.connect(
        URL,
@@ -89,7 +94,7 @@ async def send_receive(statement):
                        statement.empty()
                        statement.text(json.loads(result_str)['text'])
                        gpt_ran = True
-                       curr_prompt = "Me: " + json.loads(result_str)['text']
+                       curr_prompt = "Him: " + json.loads(result_str)['text']
                        response = openai.Completion.create(
                         engine="davinci",
                         prompt=curr_prompt,
@@ -99,8 +104,14 @@ async def send_receive(statement):
                         n=3,
                         frequency_penalty=0.0,
                         presence_penalty=0.0,
-                        stop=["Me: "]
+                        stop=["Him: "]
                         )
+                       option_1.empty()
+                       option_1.text(response.choices[0].text[3:])
+                       option_2.empty()
+                       option_2.text(response.choices[0].text[3:])
+                       option_3.empty()
+                       option_3.text(response.choices[0].text[3:])
                 
                     
 
@@ -114,4 +125,4 @@ async def send_receive(statement):
       
        send_result, receive_result = await asyncio.gather(send(), receive())
 
-asyncio.run(send_receive(statement))
+asyncio.run(send_receive(statement, option_1, option_2, option_3))
