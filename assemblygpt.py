@@ -92,13 +92,14 @@ async def send_receive(statement, option_1, option_2, option_3):
                    if json.loads(result_str)['message_type'] == 'FinalTranscript':
                        print(json.loads(result_str)['text'])
                        statement.empty()
-                       statement.text(json.loads(result_str)['text'])
+                       with statement.container():
+                          st.header(json.loads(result_str)['text'])
                        gpt_ran = True
                        curr_prompt = "Him: " + json.loads(result_str)['text']
                        response = openai.Completion.create(
                         engine="davinci",
                         prompt=curr_prompt,
-                        temperature=0.6,
+                        temperature=0.7,
                         max_tokens=30,
                         top_p=1,
                         n=3,
@@ -106,12 +107,20 @@ async def send_receive(statement, option_1, option_2, option_3):
                         presence_penalty=0.0,
                         stop=["Him: "]
                         )
+
                        option_1.empty()
-                       option_1.text(response.choices[0].text[3:])
+                       answer1 = response.choices[0].text
+                       option_1.text(answer1.split(': ')[-1])
+
                        option_2.empty()
-                       option_2.text(response.choices[0].text[3:])
+                       answer2 = response.choices[1].text
+                       option_2.text(answer2.split(': ')[-1])
+                       
                        option_3.empty()
-                       option_3.text(response.choices[0].text[3:])
+                       answer3 = response.choices[2].text
+                       option_3.text(answer3.split(': ')[-1])
+                       
+                       
                 
                     
 
